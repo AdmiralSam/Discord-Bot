@@ -9,20 +9,17 @@ namespace Discord
 {
     internal class WebSocketService
     {
-        public enum WebSocketServiceEvent { Connected, Disconnected };
-
-        public delegate void WebSocketServiceReceive(string message);
-
-        public delegate void WebSocketServiceUpdate(WebSocketServiceEvent updateEvent);
-
-        private const int Timeout = 5000;
-        private CancellationTokenSource cancellation;
-        private string uri;
-        private ClientWebSocket websocket;
-
         public event WebSocketServiceReceive OnMessageReceive;
 
         public event WebSocketServiceUpdate OnStatusUpdate;
+
+        private const int Timeout = 5000;
+
+        private CancellationTokenSource cancellation;
+
+        private string uri;
+
+        private ClientWebSocket websocket;
 
         public WebSocketService(string uri)
         {
@@ -79,5 +76,11 @@ namespace Discord
             }
             return true;
         }
+
+        public enum WebSocketServiceEvent { Connected, Disconnected };
+
+        public delegate void WebSocketServiceReceive(string message);
+
+        public delegate void WebSocketServiceUpdate(WebSocketServiceEvent updateEvent);
     }
 }

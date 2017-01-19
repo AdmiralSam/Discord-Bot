@@ -3,6 +3,7 @@ using Discord.Response;
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -11,9 +12,9 @@ namespace Discord
 {
     internal class GatewayClient
     {
-        public delegate void ConnectedHandler();
+        public event ConnectedHandler OnConnected;
 
-        public delegate void ReceiveMessageHandler(Objects.Message message);
+        public event ReceiveMessageHandler OnReceiveMessage;
 
         private int heartbeatInterval;
 
@@ -24,10 +25,6 @@ namespace Discord
         private int? lastReceived;
 
         private WebSocketService webService;
-
-        public event ConnectedHandler OnConnected;
-
-        public event ReceiveMessageHandler OnReceiveMessage;
 
         public GatewayClient()
         {
@@ -51,6 +48,31 @@ namespace Discord
         public async void Login()
         {
             await webService.Send(json.Serialize(IdentifyMessage.Mayushii));
+        }
+
+        public void SendFile(string channel, Uri url)
+        {
+            HttpWebRequest getImageRequest = WebRequest.CreateHttp(url);
+            getImageRequest.Method = "GET";
+            WebResponse response = getImageRequest.GetResponse();
+            SendFile(channel, Path.GetFileName(url.LocalPath), response.GetResponseStream());
+        }
+
+        public async void SendFile(string channel, string filename, Stream fileStream)
+        {
+            HttpWebRequest createMessageRequest = WebRequest.CreateHttp($"https://discordapp.com/api/channels/{channel}/messages");
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            createMessageRequest.ContentType = content.Headers.ContentType.ToString();
+            createMessageRequest.Method = "POST";
+            createMessageRequest.Headers[HttpRequestHeader.Authorization] = "Bot " + IdentifyMessage.Mayushii.d.token;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                fileStream.CopyTo(memoryStream);
+                content.Add(new ByteArrayContent(memoryStream.ToArray()), "file", filename);
+            }
+            await content.CopyToAsync(createMessageRequest.GetRequestStream());
+            WebResponse response = createMessageRequest.GetResponse();
+            string jsonString = new StreamReader(response.GetResponseStream()).ReadToEnd();
         }
 
         public void SendMessage(string channel, string message)
@@ -119,5 +141,9 @@ namespace Discord
                 heartbeatTimer.Dispose();
             }
         }
+
+        public delegate void ConnectedHandler();
+
+        public delegate void ReceiveMessageHandler(Objects.Message message);
     }
 }

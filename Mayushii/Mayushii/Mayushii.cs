@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Mayushii.Services;
+using System;
 using System.Collections.Generic;
 
 namespace Mayushii
@@ -27,7 +28,15 @@ namespace Mayushii
                 List<string> tags = new List<string>(message.Content.Split(' '));
                 tags.RemoveAt(0);
                 string url = DanbooruService.GetRandomImage(tags);
-                client.SendMessage(message.Channel_Id, url ?? string.Format("No Images Found For ({0})", string.Join(", ", tags)));
+                //client.SendMessage(message.Channel_Id, url ?? string.Format("No Images Found For ({0})", string.Join(", ", tags)));
+                if (url != null)
+                {
+                    client.SendFile(message.Channel_Id, new Uri(url));
+                }
+                else
+                {
+                    client.SendMessage(message.Channel_Id, string.Format("No Images Found For ({0})", string.Join(", ", tags)));
+                }
             }
         }
     }

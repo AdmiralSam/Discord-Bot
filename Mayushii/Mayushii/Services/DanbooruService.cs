@@ -35,7 +35,7 @@ namespace Mayushii.Services
         private static Post[] GetPosts(List<string> tags, int? page = null)
         {
             StringBuilder urlBuilder = new StringBuilder();
-            urlBuilder.AppendFormat("https://danbooru.donmai.us/posts.json?limit=100&tags=*{0}*", string.Join("*+*", tags));
+            urlBuilder.AppendFormat("https://danbooru.donmai.us/posts.json?limit=100&tags={0}", string.Join("*+*", tags));
             if (page != null)
             {
                 urlBuilder.AppendFormat("&page={0}", page);
