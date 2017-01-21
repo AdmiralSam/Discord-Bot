@@ -2,6 +2,7 @@
 using Mayushii.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Mayushii
 {
@@ -11,7 +12,8 @@ namespace Mayushii
 
         public Mayushii()
         {
-            client = new GatewayClient();
+            string mayushii = new StreamReader(File.OpenRead("./Mayushii.id")).ReadToEnd();
+            client = new GatewayClient(mayushii);
             client.Initialize();
             client.OnConnected += client.Login;
             client.OnReceiveMessage += Client_OnReceiveMessage;

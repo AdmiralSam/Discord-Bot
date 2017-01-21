@@ -31,7 +31,7 @@ namespace Discord.Message
                     { "$referring_domain", "" }
                 },
                 shard = new[] { 0, 1 },
-                token = "MjIwOTQ3MjIxMjA4NjI5MjU4.C2GpYw.DzmIh4r3fAvR6vw2-rGdr0SXh2U"
+                token = ""
             }
         };
 

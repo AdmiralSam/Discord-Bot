@@ -26,9 +26,12 @@ namespace Discord
 
         private WebSocketService webService;
 
-        public GatewayClient()
+        private IdentifyMessage identity;
+
+        public GatewayClient(string identity)
         {
             json = new JavaScriptSerializer();
+            this.identity = json.Deserialize<IdentifyMessage>(identity);
             OnConnected += () => { };
             OnReceiveMessage += (_) => { };
         }
@@ -47,7 +50,7 @@ namespace Discord
 
         public async void Login()
         {
-            await webService.Send(json.Serialize(IdentifyMessage.Mayushii));
+            await webService.Send(json.Serialize(identity));
         }
 
         public void SendFile(string channel, Uri url)
@@ -64,7 +67,7 @@ namespace Discord
             MultipartFormDataContent content = new MultipartFormDataContent();
             createMessageRequest.ContentType = content.Headers.ContentType.ToString();
             createMessageRequest.Method = "POST";
-            createMessageRequest.Headers[HttpRequestHeader.Authorization] = "Bot " + IdentifyMessage.Mayushii.d.token;
+            createMessageRequest.Headers[HttpRequestHeader.Authorization] = "Bot " + identity.d.token;
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 fileStream.CopyTo(memoryStream);
@@ -80,7 +83,7 @@ namespace Discord
             HttpWebRequest createMessageRequest = WebRequest.CreateHttp($"https://discordapp.com/api/channels/{channel}/messages");
             createMessageRequest.Method = "POST";
             createMessageRequest.ContentType = "application/json";
-            createMessageRequest.Headers[HttpRequestHeader.Authorization] = "Bot " + IdentifyMessage.Mayushii.d.token;
+            createMessageRequest.Headers[HttpRequestHeader.Authorization] = "Bot " + identity.d.token;
             string request = json.Serialize(new CreateMessageMessage() { content = message });
             using (Stream requestStream = createMessageRequest.GetRequestStream())
             {
