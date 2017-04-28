@@ -77,7 +77,11 @@ namespace Discord
             return true;
         }
 
-        public enum WebSocketServiceEvent { Connected, Disconnected };
+        public enum WebSocketServiceEvent
+        {
+            Connected,
+            Disconnected
+        };
 
         public delegate void WebSocketServiceReceive(string message);
 
