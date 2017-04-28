@@ -81,7 +81,7 @@ namespace Discord
         {
             Connected,
             Disconnected
-        };
+        }
 
         public delegate void WebSocketServiceReceive(string message);
 
